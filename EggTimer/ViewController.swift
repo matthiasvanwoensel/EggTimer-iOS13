@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import AVFoundation
 
 class ViewController: UIViewController {
     
@@ -16,15 +17,18 @@ class ViewController: UIViewController {
     var totalTime = 0
     var secondsPassed = 0
     var timer = Timer()
-
+    var player: AVAudioPlayer?
+    
+    
     @IBAction func hardnessSelected(_ sender: UIButton) {
         
-    
         timer.invalidate()
         
-        TextViewEggs.text = "How do you like your eggs?"
+        EggProgressBar.progress = 0.0
+        secondsPassed = 0
         
         let hardness = sender.currentTitle!
+        TextViewEggs.text = hardness
         
         totalTime = eggTimes[hardness]!
         
@@ -35,14 +39,24 @@ class ViewController: UIViewController {
     @objc func updateTimer() {
         if secondsPassed < totalTime{
             
-            let percentageProgress = secondsPassed / totalTime
-            
-            EggProgressBar.progress = Float(percentageProgress)
-        
             secondsPassed += 1
+            
+            let percentageProgress = Float(secondsPassed) / Float(totalTime)
+            
+            EggProgressBar.progress = percentageProgress
+        
+            
         }else{
             timer.invalidate()
             TextViewEggs.text = "DONE!"
+            alarm()
         }
     }
-}
+    
+    
+    func alarm() {
+        let url = Bundle.main.url(forResource: "alarm_sound", withExtension: "mp3")
+        player = try! AVAudioPlayer(contentsOf: url!)
+        player?.play()
+        
+    }}
